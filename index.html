@@ -1,0 +1,160 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>CS573 Assignment 1 Solution</title>
+  <link href="https://fonts.googleapis.com/css?family=Exo+2|Poiret+One" rel="stylesheet">
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <style type="text/css">
+    body {
+      background-color: #ffffff;
+      color: #000000;
+      font-size: large;
+      font-family: 'Exo 2', sans-serif;
+      width: 1024px;
+      height: auto;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    header {
+      width: auto;
+      height: auto;
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: 20px;
+      margin-bottom: 20px;
+      text-align: center;
+      font-size: 22pt;
+      font-weight: bold;
+    }
+    table {
+      width: auto;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .cell {
+      width: auto;
+      height: auto;
+      border: solid;
+      border-color: gray;
+    }
+    .celltitle {
+      width: auto;
+      height: auto;
+      text-align: center;
+    }
+    #mainFrame {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+  </style>
+
+</head>
+<body>
+<header>CS573 Data Visualization Assignment 1 Solution</header>
+<p class = "celltitle">Jingjun Zhang <br>jzhang9@wpi.edu</p>
+<div id = "mainFrame">
+
+<table>
+<tr>
+  <td><div id = "div1", class="cell"></div></td>
+  <td><div id = "div2", class="cell"></div></td>
+</tr>
+<tr>
+  <td><p class="celltitle">Circles</p></td>
+  <td><p class="celltitle">Rectangles</p></td>
+</tr>
+<tr>
+  <td><div id = "div3", class="cell"></div></td>
+  <td><div id = "div4", class="cell"></div></td>
+</tr>
+<tr>
+  <td><p class="celltitle">Lines</p></td>
+  <td><p class="celltitle">Polygons</p></td>
+</tr>
+</table>
+</div>
+
+<script>
+  console.log(d3); // test if d3 is loaded
+  var data = [0, 1, 2, 3, 4, 5];
+  
+  // Add an SVG
+  var svgdiv1 = d3.select("#div1").append("svg").attr("width", 400).attr("height", 400);
+  var svgdiv2 = d3.select("#div2").append("svg").attr("width", 400).attr("height", 400);
+  var svgdiv3 = d3.select("#div3").append("svg").attr("width", 400).attr("height", 400);
+  var svgdiv4 = d3.select("#div4").append("svg").attr("width", 400).attr("height", 400);
+  
+  var positionscale = d3.scaleLinear().domain([0, 5]).range([0, 400]);
+  var colorscale = d3.scaleLinear().domain([0, 5]).range(["gray", "black"]);
+  var rectsoverlay = false;
+  var circlesoverlay = false;
+  var linesoverlay = false;
+  var polygonsoverlay = false;
+  
+  // Add Rectangles
+  var rects = svgdiv2.selectAll("rect").data(data);
+  rects.enter().append("rect").attr("x", function(d) {return positionscale(d)-20; }).attr("y", 160).attr("width", 40).attr("height", 80).attr("fill", colorscale);
+  d3.selectAll("rect").on("mouseover", function (d, i) {d3.select(this).transition().style("opacity", 0.5).duration(500);});
+  d3.selectAll("rect").on("mouseout", function (d, i) {d3.select(this).transition().style("opacity", 1).duration(500);});
+  d3.selectAll("rect").on("click", function (d, i) {
+    if (rectsoverlay) {
+      d3.selectAll("rect").transition().attr("x", function (dd, ii) { return positionscale(dd)-20;}).duration(500);
+      rectsoverlay = false;
+    } else {
+      d3.selectAll("rect").transition().attr("x", positionscale(d)-20).duration(500);
+      rectsoverlay = true;
+    }
+  });
+
+  // Add Circles
+  var circles = svgdiv1.selectAll("circle").data(data);
+  circles.enter().append("circle").attr("cx", positionscale).attr("cy", 200).attr("r", 40).attr("fill", colorscale);
+  d3.selectAll("circle").on("mouseover", function (d, i) {d3.select(this).transition().style("opacity", 0.5).duration(500);});
+  d3.selectAll("circle").on("mouseout", function (d, i) {d3.select(this).transition().style("opacity", 1).duration(500);});
+  d3.selectAll("circle").on("click", function (d, i) {
+    if (circlesoverlay) {
+      d3.selectAll("circle").transition().attr("cx", function (dd, ii) { return positionscale(dd);}).duration(500);
+      circlesoverlay = false;
+    } else {
+      d3.selectAll("circle").transition().attr("cx", positionscale(d)).duration(500);
+      circlesoverlay = true;
+    }    
+  });
+
+  // Add Lines
+  var lines = svgdiv3.selectAll("line").data(data);
+  lines.enter().append("line").attr("x1", positionscale).attr("x2", positionscale).attr("y1", 150).attr("y2", 250).attr("stroke", colorscale).attr("stroke-width", 5);
+  d3.selectAll("line").on("mouseover", function (d, i) {d3.select(this).transition().style("opacity", 0.5).duration(500);});
+  d3.selectAll("line").on("mouseout", function (d, i) {d3.select(this).transition().style("opacity", 1).duration(500);});
+  d3.selectAll("line").on("click", function (d, i) {
+    if (linesoverlay) {
+      d3.selectAll("line").transition().attr("x1", function (dd, ii) { return positionscale(dd);}).attr("x2", function (dd, ii) { return positionscale(dd);}).duration(500);
+      linesoverlay = false;
+    } else {
+      d3.selectAll("line").transition().attr("x1", positionscale(d)).attr("x2", positionscale(d)).duration(500);
+      linesoverlay = true;
+    }   
+  });
+
+  // Add Polygons 
+  var polygons = svgdiv4.selectAll("polygon").data(data);
+  polygons.enter().append("polygon").attr("points", function (d) {var cp = positionscale(d); return cp+","+ 150 +" "+ (cp-40) +","+ 170 +" " + (cp-40) +","+ 230 +" " + cp +","+ 250 +" " + (cp+40) +","+ 230 +" "+ (cp+40) +","+ 170; }).attr("fill", colorscale);
+  d3.selectAll("polygon").on("mouseover", function (d, i) {d3.select(this).transition().style("opacity", 0.5).duration(500);});
+  d3.selectAll("polygon").on("mouseout", function (d, i) {d3.select(this).transition().style("opacity", 1).duration(500);});
+  d3.selectAll("polygon").on("click", function (d, i) {
+    if (polygonsoverlay) {
+      d3.selectAll("polygon").transition().attr("transform", "translate(0,0)").duration(500);
+      polygonsoverlay = false;
+    } else {
+      d3.selectAll("polygon").transition().attr("transform", function (dd, ii) { return "translate("+(positionscale(d)-positionscale(dd))+","+0+")";}).duration(500);
+      polygonsoverlay = true;
+    }   
+  });
+  
+</script>
+
+</body>
+</html>
+
